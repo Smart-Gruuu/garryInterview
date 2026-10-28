@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:InterviewAssist.Presentation.ViewModels;assembly=InterviewAssist.Presentation"
+             x:Class="InterviewAssist.Views.SetupPage"
+             x:DataType="vm:SetupViewModel"
+             Title="Setup">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="12">
+
+            <!-- Intro + readiness -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Interview profile"
+                       FontSize="{DynamicResource LargeFontSize}"
+                       FontAttributes="Bold" />
+                <Label Style="{StaticResource CaptionLabel}"
+                       Text="Add these before the interview. They are sent with every question, so answers use your real experience and fit the role. Everything saves automatically." />
+
+                <FlexLayout Wrap="Wrap" AlignItems="Center">
+                    <Label Text="{Binding ResumeReadyText}"
+                           FontSize="{DynamicResource SmallFontSize}"
+                           FontAttributes="Bold">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding HasResume}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding HasResume}" Value="False">
+                                <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label Text="·" Margin="8,0" Style="{StaticResource CaptionLabel}" />
+                    <Label Text="{Binding JobDescriptionReadyText}"
+                           FontSize="{DynamicResource SmallFontSize}"
+                           FontAttributes="Bold">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding HasJobDescription}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding HasJobDescription}" Value="False">
+                                <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label Text="·" Margin="8,0" Style="{StaticResource CaptionLabel}" />
+                    <Label Text="{Binding ApiKeysReadyText}"
+                           FontSize="{DynamicResource SmallFontSize}"
+                           FontAttributes="Bold"
+                           ToolTipProperties.Text="Open Settings">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding HasApiKeys}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding HasApiKeys}" Value="False">
+                                <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </FlexLayout>
+            </VerticalStackLayout>
+
+            <!-- Import progress / result -->
+            <Border Style="{StaticResource CardBorder}"
+                    Padding="10,6"
+                    IsVisible="{Binding HasStatus}">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <ActivityIndicator IsRunning="{Binding IsImporting}"
+                                       IsVisible="{Binding IsImporting}"
+                                       WidthRequest="18"
+                                       HeightRequest="18"
+                                       VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Text="{Binding StatusMessage}"
+                           VerticalOptions="Center">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding StatusIsError}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Button Grid.Column="2"
+                            Text="✕"
+                            Style="{StaticResource ChipButton}"
+                            Command="{Binding DismissStatusCommand}"
+                            IsVisible="{Binding CanDismissStatus}"
+                            VerticalOptions="Center"
+                            ToolTipProperties.Text="Dismiss" />
+                </Grid>
+            </Border>
+
+            <!-- Role, company, interview type -->
+            <Border Style="{StaticResource CardBorder}">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="6">
+                    <Label Text="ROLE" Style="{StaticResource SectionTitle}" />
+                    <Label Grid.Column="1" Text="COMPANY" Style="{StaticResource SectionTitle}" />
+                    <Entry Grid.Row="1"
+                           Text="{Binding Settings.RoleTitle}"
+                           Placeholder="e.g. Senior Backend Engineer" />
+                    <Entry Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding Settings.CompanyName}"
+                           Placeholder="e.g. Contoso" />
+
+                    <Label Grid.Row="2"
+                           Grid.ColumnSpan="2"
+                           Text="INTERVIEW TYPE"
+                           Style="{StaticResource SectionTitle}"
+                           Margin="0,6,0,0" />
+                    <Picker Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            ItemsSource="{Binding InterviewTypeOptions}"
+                            SelectedItem="{Binding SelectedInterviewType}"
+                            ToolTipProperties.Text="Changes the tone and approach of the answers. You can also switch it on the Live tab." />
+                    <Label Grid.Row="4"
+                           Grid.ColumnSpan="2"
+                           Text="{Binding SelectedInterviewType.Description}"
+                           Style="{StaticResource CaptionLabel}" />
+                </Grid>
+            </Border>
+
+            <!-- Job description -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                        <Label Text="JOB DESCRIPTION"
+                               Style="{StaticResource SectionTitle}"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="Import…"
+                                Style="{StaticResource ChipButton}"
+                                Command="{Binding ImportJobDescriptionCommand}"
+                                ToolTipProperties.Text="PDF, Word (.docx), .txt or .md" />
+                        <Button Grid.Column="2"
+                                Text="Clear"
+                                Style="{StaticResource ChipButton}"
+                                Command="{Binding ClearJobDescriptionCommand}" />
+                    </Grid>
+                    <Editor Text="{Binding Settings.JobDescription}"
+                            HeightRequest="160"
+                            AutoSize="Disabled"
+                            IsSpellCheckEnabled="False"
+                            Placeholder="Paste the job posting: responsibilities, requirements, tech stack, anything about the company." />
+                    <Label Text="{Binding JobDescriptionInfo}" Style="{StaticResource CaptionLabel}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Resume -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                        <Label Text="YOUR RESUME"
+                               Style="{StaticResource SectionTitle}"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="Import…"
+                                Style="{StaticResource ChipButton}"
+                                Command="{Binding ImportResumeCommand}"
+                                ToolTipProperties.Text="PDF, Word (.docx), .txt or .md" />
+                        <Button Grid.Column="2"
+                                Text="Clear"
+                                Style="{StaticResource ChipButton}"
+                                Command="{Binding ClearResumeCommand}" />
+                    </Grid>
+                    <Editor Text="{Binding Settings.Resume}"
+                            HeightRequest="200"
+                            AutoSize="Disabled"
+                            IsSpellCheckEnabled="False"
+                            Placeholder="Paste your resume: roles and dates, projects, results with numbers, skills. Plain text works best." />
+                    <Label Text="{Binding ResumeInfo}" Style="{StaticResource CaptionLabel}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Notes -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                        <Label Text="NOTES (OPTIONAL)"
+                               Style="{StaticResource SectionTitle}"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="Clear"
+                                Style="{StaticResource ChipButton}"
+                                Command="{Binding ClearExtraNotesCommand}" />
+                    </Grid>
+                    <Editor Text="{Binding Settings.ExtraNotes}"
+                            HeightRequest="100"
+                            AutoSize="Disabled"
+                            IsSpellCheckEnabled="False"
+                            Placeholder="Stories you want to bring up, strengths to stress, salary expectations, why this company…" />
+                    <Label Text="{Binding ExtraNotesInfo}" Style="{StaticResource CaptionLabel}" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

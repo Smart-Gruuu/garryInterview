@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:InterviewAssist.Presentation.ViewModels;assembly=InterviewAssist.Presentation"
+             xmlns:controls="clr-namespace:InterviewAssist.Controls"
+             xmlns:conv="clr-namespace:InterviewAssist.Converters"
+             x:Class="InterviewAssist.Views.MainPage"
+             x:DataType="vm:MainViewModel"
+             Title="Live"
+             Shell.NavBarIsVisible="False"
+             Padding="8,8,8,8">
+
+    <ContentPage.Resources>
+        <conv:InverseBoolConverter x:Key="InverseBool" />
+        <conv:StringNotEmptyConverter x:Key="NotEmpty" />
+        <conv:StatusKindToColorConverter x:Key="StatusColor" />
+        <conv:BoolToGridLengthConverter x:Key="RowWhenTrue" />
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Transcript + editable question ≈ 35% of the space left for the two cards; collapses when hidden. -->
+            <RowDefinition Height="{Binding Settings.ShowTranscript, Converter={StaticResource RowWhenTrue}, ConverterParameter=0.55*}" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- 1. Top bar: status, level, elapsed, quick toggles -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto,*,Auto,Auto,Auto"
+              ColumnSpacing="6"
+              MinimumHeightRequest="30">
+            <BoxView WidthRequest="10"
+                     HeightRequest="10"
+                     CornerRadius="5"
+                     VerticalOptions="Center"
+                     Color="{Binding StatusKind, Converter={StaticResource StatusColor}}" />
+
+            <Label Grid.Column="1"
+                   Text="{Binding StatusText}"
+                   ToolTipProperties.Text="{Binding StatusText}"
+                   FontSize="{DynamicResource SmallFontSize}"
+                   MaxLines="2"
+                   LineBreakMode="TailTruncation"
+                   VerticalOptions="Center" />
+
+            <!-- Audio level meter -->
+            <Grid Grid.Column="2"
+                  WidthRequest="30"
+                  HeightRequest="6"
+                  VerticalOptions="Center"
+                  IsVisible="{Binding IsListening}"
+                  InputTransparent="True">
+                <BoxView Color="{DynamicResource SurfaceAltColor}" CornerRadius="3" />
+                <BoxView Color="{DynamicResource SuccessColor}"
+                         CornerRadius="3"
+                         AnchorX="0"
+                         ScaleX="{Binding AudioLevel}" />
+            </Grid>
+
+            <Label Grid.Column="3"
+                   Text="{Binding ElapsedText}"
+                   Style="{StaticResource CaptionLabel}"
+                   IsVisible="{Binding IsListening}"
+                   VerticalOptions="Center" />
+
+            <HorizontalStackLayout Grid.Column="4" Spacing="4" VerticalOptions="Center">
+                <Button Text="{Binding ListenButtonText}"
+                        Style="{StaticResource ChipButton}"
+                        Command="{Binding ToggleListeningCommand}"
+                        ToolTipProperties.Text="Start or stop live captions">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsListening}" Value="False">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource AccentColor}" />
+                            <Setter Property="TextColor" Value="{DynamicResource OnAccentColor}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="📌"
+                        Style="{StaticResource ChipButton}"
+                        Command="{Binding TogglePinCommand}"
+                        IsVisible="{Binding SupportsPin}"
+                        ToolTipProperties.Text="Keep this window on top"
+                        SemanticProperties.Description="Always on top">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Settings.AlwaysOnTop}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource AccentColor}" />
+                            <Setter Property="TextColor" Value="{DynamicResource OnAccentColor}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="👁"
+                        Style="{StaticResource ChipButton}"
+                        Command="{Binding ToggleStealthCommand}"
+                        IsVisible="{Binding SupportsStealth}"
+                        ToolTipProperties.Text="Stealth: hide this window from screen sharing and recordings"
+                        SemanticProperties.Description="Stealth mode">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Settings.StealthMode}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource AccentColor}" />
+                            <Setter Property="TextColor" Value="{DynamicResource OnAccentColor}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="💬"
+                        Style="{StaticResource ChipButton}"
+                        Command="{Binding ToggleTranscriptCommand}"
+                        ToolTipProperties.Text="Show or hide the transcript"
+                        SemanticProperties.Description="Show or hide transcript" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- 2. Transcript -->
+        <Border Grid.Row="1"
+                Style="{StaticResource CardBorder}"
+                Margin="0,6,0,0"
+                Padding="10,8"
+                IsVisible="{Binding Settings.ShowTranscript}">
+            <Grid RowDefinitions="Auto,*,Auto" RowSpacing="4">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label Text="TRANSCRIPT"
+                           Style="{StaticResource SectionTitle}"
+                           VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Text="⏎ Enter to answer"
+                           Style="{StaticResource CaptionLabel}"
+                           TextColor="{DynamicResource AccentColor}"
+                           IsVisible="{Binding HasPendingQuestion}"
+                           LineBreakMode="TailTruncation"
+                           VerticalOptions="Center" />
+                    <Button Grid.Column="2"
+                            Text="Clear"
+                            Style="{StaticResource ChipButton}"
+                            Command="{Binding ClearTranscriptCommand}"
+                            ToolTipProperties.Text="Clear the transcript" />
+                </Grid>
+
+                <!-- The question to send: live captions keep flowing in (even while editing); edit freely, Enter sends it. -->
+                <Editor x:Name="DraftEditor"
+                        Grid.Row="1"
+                        Text="{Binding QuestionDraft}"
+                        Placeholder="The interviewer's words appear here as they speak. Delete anything you don't want sent, then press Enter."
+                        AutoSize="Disabled"
+                        VerticalOptions="Fill"
+                        IsSpellCheckEnabled="False"
+                        IsTextPredictionEnabled="False"
+                        ToolTipProperties.Text="Edit before sending. Enter sends, Shift+Enter adds a line." />
+
+                <!-- Words still being recognized. Also sent on Enter. -->
+                <Label Grid.Row="2"
+                       Text="{Binding LiveText}"
+                       TextColor="{DynamicResource InterimTextColor}"
+                       FontAttributes="Italic"
+                       FontSize="{DynamicResource SmallFontSize}"
+                       LineBreakMode="WordWrap"
+                       MaxLines="3"
+                       IsVisible="{Binding LiveText, Converter={StaticResource NotEmpty}}" />
+            </Grid>
+        </Border>
+
+        <!-- 3. Answer -->
+        <Border Grid.Row="2"
+                Style="{StaticResource CardBorder}"
+                Margin="0,6,0,0"
+                Padding="12,10,12,8">
+            <Grid RowDefinitions="Auto,*,Auto" RowSpacing="6">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding HasCurrentItem}">
+                    <Label Text="{Binding CurrentItem.Question, FallbackValue=''}"
+                           TextColor="{DynamicResource QuestionTextColor}"
+                           FontAttributes="Bold"
+                           MaxLines="3"
+                           LineBreakMode="TailTruncation" />
+                    <ActivityIndicator Grid.Column="1"
+                                       IsRunning="{Binding CurrentItem.IsStreaming, FallbackValue=False}"
+                                       IsVisible="{Binding CurrentItem.IsStreaming, FallbackValue=False}"
+                                       Color="{DynamicResource AccentColor}"
+                                       WidthRequest="16"
+                                       HeightRequest="16"
+                                       VerticalOptions="Start" />
+                </Grid>
+
+                <ScrollView x:Name="AnswerScroll"
+                            Grid.Row="1"
+                            IsVisible="{Binding HasCurrentItem}">
+                    <VerticalStackLayout Spacing="8" Padding="0,0,8,4">
+                        <controls:MarkdownLabel Markdown="{Binding CurrentItem.Answer, FallbackValue=''}"
+                                                FontSize="{DynamicResource AnswerFontSize}"
+                                                TextColor="{DynamicResource TextColor}"
+                                                AccentColor="{DynamicResource AccentColor}"
+                                                CodeBackgroundColor="{DynamicResource CodeBackgroundColor}"
+                                                CodeTextColor="{DynamicResource CodeTextColor}" />
+                        <Label Text="{Binding CurrentItem.ErrorMessage, FallbackValue=''}"
+                               TextColor="{DynamicResource DangerColor}"
+                               IsVisible="{Binding CurrentItem.HasError, FallbackValue=False}" />
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- Empty state -->
+                <VerticalStackLayout Grid.RowSpan="2"
+                                     Spacing="8"
+                                     VerticalOptions="Center"
+                                     IsVisible="{Binding HasCurrentItem, Converter={StaticResource InverseBool}}">
+                    <Label Text="How it works"
+                           FontAttributes="Bold"
+                           FontSize="{DynamicResource LargeFontSize}" />
+                    <Label Text="1.  Setup: paste your resume and the job description." />
+                    <Label Text="2.  Settings: add your Deepgram and OpenAI API keys." />
+                    <Label Text="3.  Press Start. After each question, trim the text in the box if needed and press Enter." />
+                    <Label Text="Esc stops an answer. You can also type a question below."
+                           Style="{StaticResource CaptionLabel}"
+                           Margin="0,4,0,0" />
+                </VerticalStackLayout>
+
+                <!-- Footer -->
+                <Grid Grid.Row="2"
+                      ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto,Auto"
+                      ColumnSpacing="4"
+                      IsVisible="{Binding HasCurrentItem}">
+                    <Button Text="◀"
+                            Style="{StaticResource ChipButton}"
+                            Command="{Binding PreviousCommand}"
+                            ToolTipProperties.Text="Previous answer" />
+                    <Label Grid.Column="1"
+                           Text="{Binding PositionText}"
+                           Style="{StaticResource CaptionLabel}"
+                           MinimumWidthRequest="36"
+                           HorizontalTextAlignment="Center"
+                           VerticalOptions="Center" />
+                    <Button Grid.Column="2"
+                            Text="▶"
+                            Style="{StaticResource ChipButton}"
+                            Command="{Binding NextCommand}"
+                            ToolTipProperties.Text="Next answer" />
+
+                    <Button Grid.Column="4"
+                            Text="■ Stop"
+                            Style="{StaticResource ChipButton}"
+                            TextColor="{DynamicResource DangerColor}"
+                            Command="{Binding CancelCommand}"
+                            IsVisible="{Binding IsGenerating}"
+                            ToolTipProperties.Text="Stop generating (Esc)" />
+                    <Button Grid.Column="5"
+                            Text="Copy"
+                            Style="{StaticResource ChipButton}"
+                            Command="{Binding CopyAnswerCommand}"
+                            ToolTipProperties.Text="Copy the answer" />
+                    <Button Grid.Column="6"
+                            Text="↻"
+                            Style="{StaticResource ChipButton}"
+                            Command="{Binding RegenerateCommand}"
+                            ToolTipProperties.Text="Regenerate this answer"
+                            SemanticProperties.Description="Regenerate" />
+                    <Button Grid.Column="7"
+                            Text="🗑"
+                            Style="{StaticResource ChipButton}"
+                            Command="{Binding ClearAllCommand}"
+                            ToolTipProperties.Text="Clear all answers and the transcript"
+                            SemanticProperties.Description="Clear all" />
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- 4. Type a question / Ask -->
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*,Auto,Auto"
+              ColumnSpacing="6"
+              Margin="0,6,0,0">
+            <Entry Text="{Binding TypedQuestion}"
+                   Placeholder="Type a question, or press Enter to answer the last one"
+                   ReturnType="Send"
+                   ReturnCommand="{Binding SubmitTypedCommand}"
+                   ClearButtonVisibility="WhileEditing"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1"
+                    Text="{Binding InterviewTypeLabel, StringFormat='{0} ▾'}"
+                    Style="{StaticResource ChipButton}"
+                    Command="{Binding ChooseInterviewTypeCommand}"
+                    VerticalOptions="Center"
+                    ToolTipProperties.Text="Interview type: changes the tone and approach of the answers"
+                    SemanticProperties.Description="Interview type" />
+            <Button Grid.Column="2"
+                    Text="Ask ⏎"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding SubmitTypedCommand}"
+                    VerticalOptions="Center"
+                    ToolTipProperties.Text="Answer the typed question, or the latest one from the transcript" />
+        </Grid>
+
+        <!-- 5. Toast (last child so it draws on top; never takes input) -->
+        <Grid Grid.RowSpan="4"
+              VerticalOptions="End"
+              HorizontalOptions="Center"
+              Margin="16,0,16,56"
+              MaximumWidthRequest="380"
+              InputTransparent="True"
+              IsVisible="{Binding ToastText, Converter={StaticResource NotEmpty}}">
+            <BoxView Color="{DynamicResource TextColor}" CornerRadius="14" Opacity="0.94" />
+            <Label Text="{Binding ToastText}"
+                   Margin="14,7"
+                   TextColor="{DynamicResource AppBackgroundColor}"
+                   FontSize="{DynamicResource SmallFontSize}"
+                   HorizontalTextAlignment="Center"
+                   LineBreakMode="WordWrap" />
+        </Grid>
+    </Grid>
+</ContentPage>

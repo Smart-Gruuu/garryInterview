@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Avalonia desktop app. Primary target: Linux x64 (X11, or Wayland through XWayland). Also runs on Windows for
+       development. Shares Core + Presentation with the MAUI app. See docs/DESKTOP-SPEC.md. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>interview-assist</AssemblyName>
+    <RootNamespace>InterviewAssist.Desktop</RootNamespace>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Version>1.0.0</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <!-- Only used when the desktop app runs on Windows (WASAPI loopback + microphone). -->
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InterviewAssist.Core\InterviewAssist.Core.csproj" />
+    <ProjectReference Include="..\InterviewAssist.Presentation\InterviewAssist.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Shared with the MAUI app; it has no MAUI dependency. -->
+    <Compile Include="..\InterviewAssist\Platforms\Windows\WindowsAudioCaptureService.cs" Link="Platform\WindowsAudioCaptureService.cs" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Every control applies its change immediately; SettingsService auto-saves.
+    Slider attributes are ordered Maximum, Minimum, Value: MAUI rejects a Minimum above the current Maximum.
+    Max tokens uses two chip buttons rather than a Stepper: the WinUI Stepper's glyphs ignore the theme colors.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:InterviewAssist.Presentation.ViewModels;assembly=InterviewAssist.Presentation"
+             x:Class="InterviewAssist.Views.SettingsPage"
+             x:DataType="vm:SettingsViewModel"
+             Title="Settings">
+
+    <ContentPage.Resources>
+        <Style x:Key="ValueLabel" TargetType="Label" BasedOn="{StaticResource CaptionLabel}">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="HorizontalOptions" Value="End" />
+        </Style>
+        <Style x:Key="LinkLabel" TargetType="Label" BasedOn="{StaticResource CaptionLabel}">
+            <Setter Property="TextColor" Value="{DynamicResource AccentColor}" />
+            <Setter Property="TextDecorations" Value="Underline" />
+            <Setter Property="HorizontalOptions" Value="Start" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="12">
+
+            <!-- ===== API keys ===== -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="API KEYS" Style="{StaticResource SectionTitle}" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Deepgram (live captions)" />
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                            <Entry Text="{Binding DeepgramApiKey}"
+                                   IsPassword="{Binding IsDeepgramKeyHidden}"
+                                   Placeholder="Paste your Deepgram API key"
+                                   IsSpellCheckEnabled="False"
+                                   IsTextPredictionEnabled="False" />
+                            <Button Grid.Column="1"
+                                    Text="{Binding DeepgramKeyToggleText}"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding ToggleDeepgramKeyVisibilityCommand}"
+                                    VerticalOptions="Center" />
+                            <Button Grid.Column="2"
+                                    Text="Test"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding TestDeepgramKeyCommand}"
+                                    VerticalOptions="Center" />
+                        </Grid>
+                        <Label Text="{Binding DeepgramKeyStatus}"
+                               IsVisible="{Binding HasDeepgramKeyStatus}"
+                               Style="{StaticResource CaptionLabel}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding DeepgramKeyOk}" Value="True">
+                                    <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding DeepgramKeyOk}" Value="False">
+                                    <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Text="Get a key at console.deepgram.com" Style="{StaticResource LinkLabel}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenUrlCommand}"
+                                                      CommandParameter="https://console.deepgram.com/" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="OpenAI (answers)" />
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                            <Entry Text="{Binding OpenAiApiKey}"
+                                   IsPassword="{Binding IsOpenAiKeyHidden}"
+                                   Placeholder="Paste your OpenAI API key"
+                                   IsSpellCheckEnabled="False"
+                                   IsTextPredictionEnabled="False" />
+                            <Button Grid.Column="1"
+                                    Text="{Binding OpenAiKeyToggleText}"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding ToggleOpenAiKeyVisibilityCommand}"
+                                    VerticalOptions="Center" />
+                            <Button Grid.Column="2"
+                                    Text="Test"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding TestOpenAiKeyCommand}"
+                                    VerticalOptions="Center" />
+                        </Grid>
+                        <Label Text="{Binding OpenAiKeyStatus}"
+                               IsVisible="{Binding HasOpenAiKeyStatus}"
+                               Style="{StaticResource CaptionLabel}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding OpenAiKeyOk}" Value="True">
+                                    <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding OpenAiKeyOk}" Value="False">
+                                    <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Text="Get a key at platform.openai.com" Style="{StaticResource LinkLabel}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenUrlCommand}"
+                                                      CommandParameter="https://platform.openai.com/api-keys" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <Label Text="OpenAI base URL (advanced)" VerticalOptions="Center" />
+                            <Button Grid.Column="1"
+                                    Text="Use default"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding ResetBaseUrlCommand}"
+                                    IsVisible="{Binding IsCustomBaseUrl}" />
+                        </Grid>
+                        <Entry Text="{Binding OpenAiBaseUrl}"
+                               Keyboard="Url"
+                               Placeholder="https://api.openai.com/v1"
+                               IsSpellCheckEnabled="False"
+                               IsTextPredictionEnabled="False" />
+                        <Label Text="{Binding BaseUrlError}"
+                               IsVisible="{Binding HasBaseUrlError}"
+                               Style="{StaticResource CaptionLabel}"
+                               TextColor="{DynamicResource DangerColor}" />
+                        <Label Text="Any OpenAI-compatible endpoint" Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ===== Transcription ===== -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="TRANSCRIPTION" Style="{StaticResource SectionTitle}" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Listen to" />
+                        <Picker ItemsSource="{Binding AudioSources}"
+                                SelectedItem="{Binding SelectedAudioSource}" />
+                        <Label Text="{Binding AudioSourceCaption}" Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <Label Text="Device" VerticalOptions="Center" />
+                            <Button Grid.Column="1"
+                                    Text="Refresh"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding RefreshDevicesCommand}" />
+                        </Grid>
+                        <Picker ItemsSource="{Binding AudioDevices}"
+                                SelectedItem="{Binding SelectedAudioDevice}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Interviewer's language" />
+                        <Picker ItemsSource="{Binding Languages}"
+                                SelectedItem="{Binding SelectedLanguage}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Deepgram model" />
+                        <Picker ItemsSource="{Binding DeepgramModels}"
+                                SelectedItem="{Binding SelectedDeepgramModel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Custom vocabulary" />
+                        <Entry Text="{Binding Settings.CustomVocabulary}"
+                               Placeholder="e.g. Kubernetes, gRPC, Contoso, Priya"
+                               IsSpellCheckEnabled="False" />
+                        <Label Text="Comma-separated names/tech terms to recognise better"
+                               Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Pause that ends a phrase" />
+                            <Label Grid.Column="1" Text="{Binding EndpointingText}" Style="{StaticResource ValueLabel}" />
+                        </Grid>
+                        <Slider Maximum="1000" Minimum="100" Value="{Binding EndpointingValue}" />
+                        <Label Text="Shorter shows final captions sooner; longer breaks sentences less often."
+                               Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                            <Label Text="Finish the caption before answering" />
+                            <Label Text="Waits up to 0.35 s for the interviewer's last words when you press Enter."
+                                   Style="{StaticResource CaptionLabel}" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1"
+                                IsToggled="{Binding Settings.FinalizeOnAsk}"
+                                VerticalOptions="Center" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ===== AI answers ===== -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="AI ANSWERS" Style="{StaticResource SectionTitle}" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <Label Text="Model" VerticalOptions="Center" />
+                            <Button Grid.Column="1"
+                                    Text="Load models"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding LoadModelsCommand}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Entry Text="{Binding OpenAiModel}"
+                                   Placeholder="Model id"
+                                   IsSpellCheckEnabled="False"
+                                   IsTextPredictionEnabled="False" />
+                            <Picker Grid.Column="1"
+                                    ItemsSource="{Binding ModelOptions}"
+                                    SelectedItem="{Binding SelectedModelOption}" />
+                        </Grid>
+                        <Label Text="{Binding ModelsStatus}"
+                               IsVisible="{Binding HasModelsStatus}"
+                               Style="{StaticResource CaptionLabel}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding ModelsOk}" Value="True">
+                                    <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding ModelsOk}" Value="False">
+                                    <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Text="Type any model id, or pick one from the list."
+                               Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                            <Label Text="Answer length" />
+                            <Label Grid.Column="1" Text="Format" />
+                            <Picker Grid.Row="1"
+                                    ItemsSource="{Binding AnswerLengths}"
+                                    SelectedItem="{Binding SelectedAnswerLength}" />
+                            <Picker Grid.Row="1"
+                                    Grid.Column="1"
+                                    ItemsSource="{Binding AnswerFormats}"
+                                    SelectedItem="{Binding SelectedAnswerFormat}" />
+                        </Grid>
+                        <Label Text="{Binding AnswerStyleDescription}" Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Answer language" />
+                        <Entry Text="{Binding Settings.AnswerLanguage}"
+                               Placeholder="Same as the question" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Temperature" />
+                            <Label Grid.Column="1" Text="{Binding TemperatureText}" Style="{StaticResource ValueLabel}" />
+                        </Grid>
+                        <Slider Maximum="1" Minimum="0" Value="{Binding TemperatureValue}" />
+                        <Label Text="{Binding TemperatureCaption}" Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                            <Label Text="Max answer tokens" />
+                            <Label Text="{Binding MaxTokensText}" Style="{StaticResource CaptionLabel}" />
+                        </VerticalStackLayout>
+                        <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                            <Button Text="−"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding DecreaseMaxTokensCommand}"
+                                    WidthRequest="40"
+                                    ToolTipProperties.Text="100 fewer" />
+                            <Button Text="+"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding IncreaseMaxTokensCommand}"
+                                    WidthRequest="40"
+                                    ToolTipProperties.Text="100 more" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Conversation memory" />
+                            <Label Grid.Column="1" Text="{Binding HistoryDepthText}" Style="{StaticResource ValueLabel}" />
+                        </Grid>
+                        <Slider Maximum="10" Minimum="0" Value="{Binding HistoryDepthValue}" />
+                        <Label Text="Earlier questions and answers sent along, so follow-up questions make sense."
+                               Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Reasoning effort" />
+                        <Picker ItemsSource="{Binding ReasoningEfforts}"
+                                SelectedItem="{Binding SelectedReasoningEffort}" />
+                        <Label Text="{Binding ReasoningCaption}" Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Custom instructions" />
+                        <Editor Text="{Binding Settings.CustomInstructions}"
+                                HeightRequest="100"
+                                AutoSize="Disabled"
+                                Placeholder="e.g. Mention my AWS certification when relevant. Keep a warm, confident tone." />
+                        <Label Text="Added to every request; they override the default answer rules."
+                               Style="{StaticResource CaptionLabel}" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ===== Window & appearance ===== -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="WINDOW &amp; APPEARANCE" Style="{StaticResource SectionTitle}" />
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding SupportsAlwaysOnTop}">
+                        <Label Text="Always on top" VerticalOptions="Center" />
+                        <Switch Grid.Column="1"
+                                IsToggled="{Binding Settings.AlwaysOnTop}"
+                                VerticalOptions="Center" />
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="2" IsVisible="{Binding SupportsOpacity}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Opacity" />
+                            <Label Grid.Column="1" Text="{Binding OpacityText}" Style="{StaticResource ValueLabel}" />
+                        </Grid>
+                        <Slider Maximum="100" Minimum="30" Value="{Binding OpacityPercent}" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding SupportsStealth}">
+                        <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                            <Label Text="Stealth mode" />
+                            <Label Text="{Binding StealthCaption}" Style="{StaticResource CaptionLabel}" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1"
+                                IsToggled="{Binding Settings.StealthMode}"
+                                VerticalOptions="Center" />
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Theme" />
+                        <Picker ItemsSource="{Binding Themes}"
+                                SelectedItem="{Binding SelectedTheme}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Text size" />
+                            <Label Grid.Column="1" Text="{Binding FontSizeText}" Style="{StaticResource ValueLabel}" />
+                        </Grid>
+                        <Slider Maximum="22" Minimum="11" Value="{Binding FontSizeValue}" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Label Text="Show live transcript" VerticalOptions="Center" />
+                        <Switch Grid.Column="1"
+                                IsToggled="{Binding Settings.ShowTranscript}"
+                                VerticalOptions="Center" />
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="4" IsVisible="{Binding SupportsGlobalHotkeys}">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                            <Label Text="Answer hotkey" />
+                            <Label Grid.Column="1" Text="Show/hide hotkey" />
+                            <Picker Grid.Row="1"
+                                    ItemsSource="{Binding Hotkeys}"
+                                    SelectedItem="{Binding SelectedAskHotkey}" />
+                            <Picker Grid.Row="1"
+                                    Grid.Column="1"
+                                    ItemsSource="{Binding Hotkeys}"
+                                    SelectedItem="{Binding SelectedToggleHotkey}" />
+                        </Grid>
+                        <Label Text="Global — work while Zoom/Teams has focus. Enter also works when this window is focused."
+                               Style="{StaticResource CaptionLabel}" />
+                        <Label Text="Both hotkeys are the same; pick two different ones."
+                               IsVisible="{Binding HotkeyConflict}"
+                               Style="{StaticResource CaptionLabel}"
+                               TextColor="{DynamicResource WarningColor}" />
+                    </VerticalStackLayout>
+
+                    <Border IsVisible="{Binding HasWindowWarning}"
+                            Stroke="{DynamicResource WarningColor}"
+                            Padding="10,6">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Label Text="{Binding WindowWarning}"
+                                   TextColor="{DynamicResource WarningColor}"
+                                   FontSize="{DynamicResource SmallFontSize}"
+                                   VerticalOptions="Center" />
+                            <Button Grid.Column="1"
+                                    Text="✕"
+                                    Style="{StaticResource ChipButton}"
+                                    Command="{Binding DismissWindowWarningCommand}"
+                                    VerticalOptions="Center"
+                                    ToolTipProperties.Text="Dismiss" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ===== About ===== -->
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="ABOUT" Style="{StaticResource SectionTitle}" />
+                    <Label Text="{Binding VersionText}" />
+                    <Label Text="Settings and API keys are stored only on this device. Your resume, job description and the interviewer's audio are sent to Deepgram and OpenAI to produce captions and answers."
+                           Style="{StaticResource CaptionLabel}" />
+                    <Button Text="Reset settings"
+                            Style="{StaticResource DangerButton}"
+                            Command="{Binding ResetSettingsCommand}"
+                            HorizontalOptions="Start" />
+                    <Label Text="Keeps your API keys, resume, job description and notes."
+                           Style="{StaticResource CaptionLabel}" />
+                    <Label Text="{Binding ResetStatus}"
+                           IsVisible="{Binding HasResetStatus}"
+                           Style="{StaticResource CaptionLabel}"
+                           TextColor="{DynamicResource SuccessColor}" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,193 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:InterviewAssist.Presentation.ViewModels"
+             x:Class="InterviewAssist.Desktop.Views.SetupView"
+             x:DataType="vm:SetupViewModel">
+
+    <UserControl.Styles>
+        <!-- Readiness labels: red until the item is filled in, then green. -->
+        <Style Selector="TextBlock.Ready">
+            <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+        </Style>
+        <Style Selector="TextBlock.Ready.ok">
+            <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+        </Style>
+        <Style Selector="TextBlock.error">
+            <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+        </Style>
+        <Style Selector="TextBox.Document">
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+        </Style>
+        <Style Selector="Arc.Spinner">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+            <Setter Property="StartAngle" Value="0" />
+            <Setter Property="SweepAngle" Value="270" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="StrokeLineCap" Value="Round" />
+            <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
+            <Style.Animations>
+                <Animation Duration="0:0:0.9" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="360" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="12" Spacing="12">
+
+            <!-- Intro + readiness -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Interview profile"
+                           FontSize="{DynamicResource LargeFontSize}"
+                           FontWeight="Bold" />
+                <TextBlock Classes="Caption"
+                           TextWrapping="Wrap"
+                           Text="Add these before the interview. They are sent with every question, so answers use your real experience and fit the role. Everything saves automatically." />
+
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Classes="Ready" Classes.ok="{Binding HasResume}" Text="{Binding ResumeReadyText}" />
+                    <TextBlock Classes="Caption" Text="·" Margin="8,0" VerticalAlignment="Center" />
+                    <TextBlock Classes="Ready"
+                               Classes.ok="{Binding HasJobDescription}"
+                               Text="{Binding JobDescriptionReadyText}" />
+                    <TextBlock Classes="Caption" Text="·" Margin="8,0" VerticalAlignment="Center" />
+                    <HyperlinkButton Padding="0"
+                                     VerticalAlignment="Center"
+                                     Command="{Binding OpenSettingsCommand}"
+                                     ToolTip.Tip="Open Settings">
+                        <TextBlock Classes="Ready" Classes.ok="{Binding HasApiKeys}" Text="{Binding ApiKeysReadyText}" />
+                    </HyperlinkButton>
+                </WrapPanel>
+            </StackPanel>
+
+            <!-- Import progress / result -->
+            <Border Classes="Card" Padding="10,6" IsVisible="{Binding HasStatus}">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Arc Classes="Spinner" VerticalAlignment="Center" IsVisible="{Binding IsImporting}" />
+                    <TextBlock Grid.Column="1"
+                               Classes.error="{Binding StatusIsError}"
+                               Text="{Binding StatusMessage}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="2"
+                            Classes="Chip"
+                            Content="✕"
+                            Command="{Binding DismissStatusCommand}"
+                            IsVisible="{Binding CanDismissStatus}"
+                            VerticalAlignment="Center"
+                            ToolTip.Tip="Dismiss" />
+                </Grid>
+            </Border>
+
+            <!-- Role, company, interview type -->
+            <Border Classes="Card">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="6">
+                    <TextBlock Classes="SectionTitle" Text="ROLE" />
+                    <TextBlock Grid.Column="1" Classes="SectionTitle" Text="COMPANY" />
+                    <TextBox Grid.Row="1"
+                             Text="{Binding Settings.RoleTitle}"
+                             PlaceholderText="e.g. Senior Backend Engineer" />
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             Text="{Binding Settings.CompanyName}"
+                             PlaceholderText="e.g. Contoso" />
+
+                    <TextBlock Grid.Row="2"
+                               Grid.ColumnSpan="2"
+                               Classes="SectionTitle"
+                               Text="INTERVIEW TYPE"
+                               Margin="0,6,0,0" />
+                    <ComboBox Grid.Row="3"
+                              Grid.ColumnSpan="2"
+                              HorizontalAlignment="Stretch"
+                              ItemsSource="{Binding InterviewTypeOptions}"
+                              SelectedItem="{Binding SelectedInterviewType}"
+                              ToolTip.Tip="Changes the tone and approach of the answers. You can also switch it on the Live tab." />
+                    <TextBlock Grid.Row="4"
+                               Grid.ColumnSpan="2"
+                               Classes="Caption"
+                               TextWrapping="Wrap"
+                               Text="{Binding SelectedInterviewType.Description}" />
+                </Grid>
+            </Border>
+
+            <!-- Job description -->
+            <Border Classes="Card">
+                <StackPanel Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                        <TextBlock Classes="SectionTitle" Text="JOB DESCRIPTION" VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Classes="Chip"
+                                Content="Import…"
+                                Command="{Binding ImportJobDescriptionCommand}"
+                                ToolTip.Tip="PDF, Word (.docx), .txt or .md" />
+                        <Button Grid.Column="2"
+                                Classes="Chip"
+                                Content="Clear"
+                                Command="{Binding ClearJobDescriptionCommand}" />
+                    </Grid>
+                    <TextBox Classes="Document"
+                             Height="160"
+                             Text="{Binding Settings.JobDescription}"
+                             PlaceholderText="Paste the job posting: responsibilities, requirements, tech stack, anything about the company." />
+                    <TextBlock Classes="Caption" Text="{Binding JobDescriptionInfo}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Resume -->
+            <Border Classes="Card">
+                <StackPanel Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                        <TextBlock Classes="SectionTitle" Text="YOUR RESUME" VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Classes="Chip"
+                                Content="Import…"
+                                Command="{Binding ImportResumeCommand}"
+                                ToolTip.Tip="PDF, Word (.docx), .txt or .md" />
+                        <Button Grid.Column="2"
+                                Classes="Chip"
+                                Content="Clear"
+                                Command="{Binding ClearResumeCommand}" />
+                    </Grid>
+                    <TextBox Classes="Document"
+                             Height="200"
+                             Text="{Binding Settings.Resume}"
+                             PlaceholderText="Paste your resume: roles and dates, projects, results with numbers, skills. Plain text works best." />
+                    <TextBlock Classes="Caption" Text="{Binding ResumeInfo}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Notes -->
+            <Border Classes="Card">
+                <StackPanel Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                        <TextBlock Classes="SectionTitle" Text="NOTES (OPTIONAL)" VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Classes="Chip"
+                                Content="Clear"
+                                Command="{Binding ClearExtraNotesCommand}" />
+                    </Grid>
+                    <TextBox Classes="Document"
+                             Height="100"
+                             Text="{Binding Settings.ExtraNotes}"
+                             PlaceholderText="Stories you want to bring up, strengths to stress, salary expectations, why this company…" />
+                    <TextBlock Classes="Caption" Text="{Binding ExtraNotesInfo}" />
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

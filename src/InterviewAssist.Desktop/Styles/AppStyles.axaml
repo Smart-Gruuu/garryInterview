@@ -1,0 +1,148 @@
+<!--
+    App-wide styles on top of FluentTheme. Every color and font size is a {DynamicResource} set by AvaloniaThemeService
+    (Dark defaults in App.axaml), so changing the theme or font size restyles the whole app live. Fluent's own control
+    keys (ButtonBackground, TextControlBackground, ...) are pointed at the palette by the theme service too.
+
+    Classes for views (the MAUI style keys in brackets):
+      Border.Card (CardBorder)       TextBlock.SectionTitle (SectionTitle)   TextBlock.Caption (CaptionLabel)
+      Button.Primary (PrimaryButton) Button.Chip (ChipButton)                Button.Danger (DangerButton)
+    A plain Button is the secondary look (Fluent's Button with the palette's SurfaceAlt / Text colors).
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ===== Window & tabs ===== -->
+
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+    </Style>
+
+    <!-- Compact tab strip: the window is often only ~340 px wide. -->
+    <Style Selector="TabControl">
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style Selector="TabItem">
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="MinHeight" Value="34" />
+        <Setter Property="Padding" Value="12,0" />
+    </Style>
+
+    <!-- ===== Text ===== -->
+
+    <Style Selector="TextBlock.SectionTitle">
+        <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource SubtleTextBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.Caption">
+        <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource SubtleTextBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- ===== Inputs ===== -->
+
+    <Style Selector="TextBox">
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="MinHeight" Value="34" />
+    </Style>
+
+    <Style Selector="ComboBox">
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="MinHeight" Value="34" />
+    </Style>
+
+    <!-- ===== Containers ===== -->
+
+    <Style Selector="Border.Card">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="10" />
+    </Style>
+
+    <!-- Dialog boxes shown over the window (Views/Dialogs): as wide as the window allows, up to MaxWidth, centered. -->
+    <Style Selector="Border.Dialog">
+        <Setter Property="MaxWidth" Value="380" />
+        <Setter Property="Margin" Value="16" />
+        <Setter Property="Padding" Value="16" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="BoxShadow" Value="0 8 28 0 #66000000" />
+    </Style>
+
+    <Style Selector="TextBlock.DialogTitle">
+        <Setter Property="FontSize" Value="{DynamicResource LargeFontSize}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- ===== Buttons ===== -->
+
+    <Style Selector="Button.Primary, Button.Chip, Button.Danger">
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="Button.Primary">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Padding" Value="14,7" />
+    </Style>
+
+    <Style Selector="Button.Danger">
+        <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Padding" Value="14,7" />
+    </Style>
+
+    <Style Selector="Button.Chip">
+        <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}" />
+        <Setter Property="Padding" Value="10,4" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="MinHeight" Value="28" />
+    </Style>
+
+    <!-- Fluent recolours the template's presenter on hover/press/disable; colored buttons keep their own colors and
+         dim instead, like the MAUI visual states. -->
+    <Style Selector="Button.Primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+    <Style Selector="Button.Primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+    <Style Selector="Button.Primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+        <Setter Property="Opacity" Value="0.45" />
+    </Style>
+
+    <Style Selector="Button.Danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+    <Style Selector="Button.Danger:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+    <Style Selector="Button.Danger:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Opacity" Value="0.45" />
+    </Style>
+
+</Styles>

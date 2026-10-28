@@ -1,0 +1,417 @@
+<!-- Every control applies its change immediately; SettingsService auto-saves. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:InterviewAssist.Presentation.ViewModels"
+             xmlns:theming="using:InterviewAssist.Presentation.Theming"
+             x:Class="InterviewAssist.Desktop.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.Value">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        <Style Selector="TextBlock.ok">
+            <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+        </Style>
+        <Style Selector="TextBlock.bad">
+            <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+        </Style>
+        <Style Selector="HyperlinkButton.Link">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style Selector="HyperlinkButton.Link TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="TextDecorations" Value="Underline" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="ToggleSwitch">
+            <Setter Property="OnContent" Value="" />
+            <Setter Property="OffContent" Value="" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.Label">
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="12" Spacing="12">
+
+            <!-- ===== API keys ===== -->
+            <Border Classes="Card">
+                <StackPanel Spacing="12">
+                    <TextBlock Classes="SectionTitle" Text="API KEYS" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Deepgram (live captions)" />
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                            <TextBox Text="{Binding DeepgramApiKey}"
+                                     PasswordChar="•"
+                                     RevealPassword="{Binding ShowDeepgramKey}"
+                                     PlaceholderText="Paste your Deepgram API key" />
+                            <Button Grid.Column="1"
+                                    Classes="Chip"
+                                    Content="{Binding DeepgramKeyToggleText}"
+                                    Command="{Binding ToggleDeepgramKeyVisibilityCommand}"
+                                    VerticalAlignment="Center" />
+                            <Button Grid.Column="2"
+                                    Classes="Chip"
+                                    Content="Test"
+                                    Command="{Binding TestDeepgramKeyCommand}"
+                                    VerticalAlignment="Center" />
+                        </Grid>
+                        <TextBlock Classes="Caption"
+                                   Classes.ok="{Binding DeepgramKeyOk, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:True}}"
+                                   Classes.bad="{Binding DeepgramKeyOk, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:False}}"
+                                   Text="{Binding DeepgramKeyStatus}"
+                                   TextWrapping="Wrap"
+                                   IsVisible="{Binding HasDeepgramKeyStatus}" />
+                        <HyperlinkButton Classes="Link"
+                                         Command="{Binding OpenUrlCommand}"
+                                         CommandParameter="https://console.deepgram.com/">
+                            <TextBlock Classes="Caption" Text="Get a key at console.deepgram.com" />
+                        </HyperlinkButton>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="OpenAI (answers)" />
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                            <TextBox Text="{Binding OpenAiApiKey}"
+                                     PasswordChar="•"
+                                     RevealPassword="{Binding ShowOpenAiKey}"
+                                     PlaceholderText="Paste your OpenAI API key" />
+                            <Button Grid.Column="1"
+                                    Classes="Chip"
+                                    Content="{Binding OpenAiKeyToggleText}"
+                                    Command="{Binding ToggleOpenAiKeyVisibilityCommand}"
+                                    VerticalAlignment="Center" />
+                            <Button Grid.Column="2"
+                                    Classes="Chip"
+                                    Content="Test"
+                                    Command="{Binding TestOpenAiKeyCommand}"
+                                    VerticalAlignment="Center" />
+                        </Grid>
+                        <TextBlock Classes="Caption"
+                                   Classes.ok="{Binding OpenAiKeyOk, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:True}}"
+                                   Classes.bad="{Binding OpenAiKeyOk, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:False}}"
+                                   Text="{Binding OpenAiKeyStatus}"
+                                   TextWrapping="Wrap"
+                                   IsVisible="{Binding HasOpenAiKeyStatus}" />
+                        <HyperlinkButton Classes="Link"
+                                         Command="{Binding OpenUrlCommand}"
+                                         CommandParameter="https://platform.openai.com/api-keys">
+                            <TextBlock Classes="Caption" Text="Get a key at platform.openai.com" />
+                        </HyperlinkButton>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBlock Text="OpenAI base URL (advanced)" VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="Chip"
+                                    Content="Use default"
+                                    Command="{Binding ResetBaseUrlCommand}"
+                                    IsVisible="{Binding IsCustomBaseUrl}" />
+                        </Grid>
+                        <TextBox Text="{Binding OpenAiBaseUrl}" PlaceholderText="https://api.openai.com/v1" />
+                        <TextBlock Classes="Caption bad"
+                                   Text="{Binding BaseUrlError}"
+                                   TextWrapping="Wrap"
+                                   IsVisible="{Binding HasBaseUrlError}" />
+                        <TextBlock Classes="Caption" Text="Any OpenAI-compatible endpoint" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Transcription ===== -->
+            <Border Classes="Card">
+                <StackPanel Spacing="12">
+                    <TextBlock Classes="SectionTitle" Text="TRANSCRIPTION" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Listen to" />
+                        <ComboBox ItemsSource="{Binding AudioSources}" SelectedItem="{Binding SelectedAudioSource}" />
+                        <TextBlock Classes="Caption" Text="{Binding AudioSourceCaption}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBlock Text="Device" VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="Chip"
+                                    Content="Refresh"
+                                    Command="{Binding RefreshDevicesCommand}" />
+                        </Grid>
+                        <ComboBox x:Name="DeviceCombo" ItemsSource="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Interviewer's language" />
+                        <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Deepgram model" />
+                        <ComboBox ItemsSource="{Binding DeepgramModels}" SelectedItem="{Binding SelectedDeepgramModel}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Custom vocabulary" />
+                        <TextBox Text="{Binding Settings.CustomVocabulary}"
+                                 PlaceholderText="e.g. Kubernetes, gRPC, Contoso, Priya" />
+                        <TextBlock Classes="Caption"
+                                   Text="Comma-separated names/tech terms to recognise better"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Pause that ends a phrase" />
+                            <TextBlock Grid.Column="1" Classes="Caption Value" Text="{Binding EndpointingText}" />
+                        </Grid>
+                        <Slider Minimum="100" Maximum="1000" Value="{Binding EndpointingValue}" />
+                        <TextBlock Classes="Caption"
+                                   Text="Shorter shows final captions sooner; longer breaks sentences less often."
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Classes="Label" Text="Finish the caption before answering" />
+                            <TextBlock Classes="Caption"
+                                       Text="Waits up to 0.35 s for the interviewer's last words when you press Enter."
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding Settings.FinalizeOnAsk}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== AI answers ===== -->
+            <Border Classes="Card">
+                <StackPanel Spacing="12">
+                    <TextBlock Classes="SectionTitle" Text="AI ANSWERS" />
+
+                    <StackPanel Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBlock Text="Model" VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="Chip"
+                                    Content="Load models"
+                                    Command="{Binding LoadModelsCommand}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <TextBox Text="{Binding OpenAiModel}" PlaceholderText="Model id" />
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding ModelOptions}"
+                                      SelectedItem="{Binding SelectedModelOption}" />
+                        </Grid>
+                        <TextBlock Classes="Caption"
+                                   Classes.ok="{Binding ModelsOk, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:True}}"
+                                   Classes.bad="{Binding ModelsOk, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:False}}"
+                                   Text="{Binding ModelsStatus}"
+                                   TextWrapping="Wrap"
+                                   IsVisible="{Binding HasModelsStatus}" />
+                        <TextBlock Classes="Caption" Text="Type any model id, or pick one from the list." TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                            <TextBlock Text="Answer length" />
+                            <TextBlock Grid.Column="1" Text="Format" />
+                            <ComboBox Grid.Row="1"
+                                      ItemsSource="{Binding AnswerLengths}"
+                                      SelectedItem="{Binding SelectedAnswerLength}" />
+                            <ComboBox Grid.Row="1"
+                                      Grid.Column="1"
+                                      ItemsSource="{Binding AnswerFormats}"
+                                      SelectedItem="{Binding SelectedAnswerFormat}" />
+                        </Grid>
+                        <TextBlock Classes="Caption" Text="{Binding AnswerStyleDescription}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Answer language" />
+                        <TextBox Text="{Binding Settings.AnswerLanguage}" PlaceholderText="Same as the question" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Temperature" />
+                            <TextBlock Grid.Column="1" Classes="Caption Value" Text="{Binding TemperatureText}" />
+                        </Grid>
+                        <Slider Minimum="0" Maximum="1" Value="{Binding TemperatureValue}" />
+                        <TextBlock Classes="Caption" Text="{Binding TemperatureCaption}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="Max answer tokens" />
+                            <TextBlock Classes="Caption" Text="{Binding MaxTokensText}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Button Classes="Chip"
+                                    Content="−"
+                                    Width="40"
+                                    HorizontalContentAlignment="Center"
+                                    Command="{Binding DecreaseMaxTokensCommand}"
+                                    ToolTip.Tip="100 fewer" />
+                            <Button Classes="Chip"
+                                    Content="+"
+                                    Width="40"
+                                    HorizontalContentAlignment="Center"
+                                    Command="{Binding IncreaseMaxTokensCommand}"
+                                    ToolTip.Tip="100 more" />
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Conversation memory" />
+                            <TextBlock Grid.Column="1" Classes="Caption Value" Text="{Binding HistoryDepthText}" />
+                        </Grid>
+                        <Slider Minimum="0" Maximum="10" Value="{Binding HistoryDepthValue}" />
+                        <TextBlock Classes="Caption"
+                                   Text="Earlier questions and answers sent along, so follow-up questions make sense."
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Reasoning effort" />
+                        <ComboBox ItemsSource="{Binding ReasoningEfforts}" SelectedItem="{Binding SelectedReasoningEffort}" />
+                        <TextBlock Classes="Caption" Text="{Binding ReasoningCaption}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Custom instructions" />
+                        <TextBox Text="{Binding Settings.CustomInstructions}"
+                                 Height="100"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 VerticalContentAlignment="Top"
+                                 PlaceholderText="e.g. Mention my AWS certification when relevant. Keep a warm, confident tone." />
+                        <TextBlock Classes="Caption"
+                                   Text="Added to every request; they override the default answer rules."
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Window & appearance ===== -->
+            <Border Classes="Card">
+                <StackPanel Spacing="12">
+                    <TextBlock Classes="SectionTitle" Text="WINDOW &amp; APPEARANCE" />
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding SupportsAlwaysOnTop}">
+                        <TextBlock Text="Always on top" VerticalAlignment="Center" />
+                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding Settings.AlwaysOnTop}" />
+                    </Grid>
+
+                    <StackPanel Spacing="2" IsVisible="{Binding SupportsOpacity}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Opacity" />
+                            <TextBlock Grid.Column="1" Classes="Caption Value" Text="{Binding OpacityText}" />
+                        </Grid>
+                        <Slider Minimum="30" Maximum="100" Value="{Binding OpacityPercent}" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding SupportsStealth}">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="Stealth mode" />
+                            <TextBlock Classes="Caption" Text="{Binding StealthCaption}" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding Settings.StealthMode}" />
+                    </Grid>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Theme" />
+                        <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Text size" />
+                            <TextBlock Grid.Column="1" Classes="Caption Value" Text="{Binding FontSizeText}" />
+                        </Grid>
+                        <Slider Minimum="{x:Static theming:FontSizeLimits.Min}"
+                                Maximum="{x:Static theming:FontSizeLimits.Max}"
+                                Value="{Binding FontSizeValue}" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <TextBlock Text="Show live transcript" VerticalAlignment="Center" />
+                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding Settings.ShowTranscript}" />
+                    </Grid>
+
+                    <StackPanel Spacing="4" IsVisible="{Binding SupportsGlobalHotkeys}">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                            <TextBlock Text="Answer hotkey" />
+                            <TextBlock Grid.Column="1" Text="Show/hide hotkey" />
+                            <ComboBox Grid.Row="1" ItemsSource="{Binding Hotkeys}" SelectedItem="{Binding SelectedAskHotkey}" />
+                            <ComboBox Grid.Row="1"
+                                      Grid.Column="1"
+                                      ItemsSource="{Binding Hotkeys}"
+                                      SelectedItem="{Binding SelectedToggleHotkey}" />
+                        </Grid>
+                        <TextBlock Classes="Caption"
+                                   Text="Global — work while Zoom/Teams has focus. Enter also works when this window is focused."
+                                   TextWrapping="Wrap" />
+                        <TextBlock Classes="Caption"
+                                   Text="Both hotkeys are the same; pick two different ones."
+                                   Foreground="{DynamicResource WarningBrush}"
+                                   TextWrapping="Wrap"
+                                   IsVisible="{Binding HotkeyConflict}" />
+                    </StackPanel>
+
+                    <Border BorderBrush="{DynamicResource WarningBrush}"
+                            BorderThickness="1"
+                            Padding="10,6"
+                            IsVisible="{Binding HasWindowWarning}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <TextBlock Text="{Binding WindowWarning}"
+                                       Foreground="{DynamicResource WarningBrush}"
+                                       FontSize="{DynamicResource SmallFontSize}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="Chip"
+                                    Content="✕"
+                                    Command="{Binding DismissWindowWarningCommand}"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="Dismiss" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== About ===== -->
+            <Border Classes="Card">
+                <StackPanel Spacing="8">
+                    <TextBlock Classes="SectionTitle" Text="ABOUT" />
+                    <TextBlock Text="{Binding VersionText}" />
+                    <TextBlock Classes="Caption"
+                               Text="Settings and API keys are stored only on this device. Your resume, job description and the interviewer's audio are sent to Deepgram and OpenAI to produce captions and answers."
+                               TextWrapping="Wrap" />
+                    <Button Classes="Danger"
+                            Content="Reset settings"
+                            Command="{Binding ResetSettingsCommand}"
+                            HorizontalAlignment="Left" />
+                    <TextBlock Classes="Caption"
+                               Text="Keeps your API keys, resume, job description and notes."
+                               TextWrapping="Wrap" />
+                    <TextBlock Classes="Caption ok"
+                               Text="{Binding ResetStatus}"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding HasResetStatus}" />
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- UI-framework-neutral presentation layer: view models, settings persistence, theme palettes and the markdown
+       parser, shared by the MAUI app (Windows/Android) and the Avalonia desktop app (Linux). No MAUI or Avalonia
+       references: everything platform-specific comes in through the interfaces in Services/. -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>InterviewAssist.Presentation</RootNamespace>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InterviewAssist.Core\InterviewAssist.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="InterviewAssist.Presentation.Tests" />
+  </ItemGroup>
+
+</Project>

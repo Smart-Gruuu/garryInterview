@@ -1,0 +1,31 @@
+<!--
+    Three tabs (Live / Setup / Settings) in a compact strip; the tab views are injected by MainWindow's constructor.
+    DialogLayer covers everything while AvaloniaDialogService shows a dialog. DesktopWindowService makes the window
+    see-through by clearing the window background and dimming Root, so Root carries the app background.
+-->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:InterviewAssist.Desktop.ViewModels"
+        x:Class="InterviewAssist.Desktop.MainWindow"
+        x:DataType="vm:ShellViewModel"
+        Title="Interview Assist"
+        MinWidth="340"
+        MinHeight="420">
+
+    <Panel x:Name="Root"
+           Background="{DynamicResource AppBackgroundBrush}">
+
+        <TabControl x:Name="Tabs"
+                    SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+            <TabItem x:Name="LiveTab" Header="Live" />
+            <TabItem x:Name="SetupTab" Header="Setup" />
+            <TabItem x:Name="SettingsTab" Header="Settings" />
+        </TabControl>
+
+        <Panel x:Name="DialogLayer"
+               IsVisible="False"
+               Background="#80000000"
+               KeyboardNavigation.TabNavigation="Cycle" />
+    </Panel>
+
+</Window>

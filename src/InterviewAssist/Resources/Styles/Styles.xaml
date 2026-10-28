@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        Every color and font size is a {DynamicResource} set by ThemeService (defaults in Colors.xaml),
+        so changing the theme or font size restyles the whole app live.
+        An explicit Style replaces the implicit one in MAUI, so shared setters live in keyed Base* styles
+        that both the implicit and the named styles are BasedOn.
+    -->
+
+    <!-- ===== Pages & shell ===== -->
+
+    <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+        <Setter Property="BackgroundColor" Value="{DynamicResource AppBackgroundColor}" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style TargetType="Shell" ApplyToDerivedTypes="True">
+        <Setter Property="Shell.BackgroundColor" Value="{DynamicResource AppBackgroundColor}" />
+        <Setter Property="Shell.ForegroundColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="Shell.TitleColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="Shell.DisabledColor" Value="{DynamicResource SubtleTextColor}" />
+        <Setter Property="Shell.UnselectedColor" Value="{DynamicResource SubtleTextColor}" />
+        <Setter Property="Shell.NavBarHasShadow" Value="False" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="{DynamicResource SurfaceColor}" />
+        <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource AccentColor}" />
+        <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource AccentColor}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource SubtleTextColor}" />
+    </Style>
+
+    <!-- ===== Text ===== -->
+
+    <Style x:Key="BaseLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+    </Style>
+
+    <Style TargetType="Label" BasedOn="{StaticResource BaseLabel}" ApplyToDerivedTypes="True" />
+
+    <Style x:Key="SectionTitle" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{DynamicResource SubtleTextColor}" />
+    </Style>
+
+    <Style x:Key="CaptionLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}" />
+        <Setter Property="TextColor" Value="{DynamicResource SubtleTextColor}" />
+    </Style>
+
+    <!-- ===== Inputs ===== -->
+
+    <Style TargetType="Entry">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource SubtleTextColor}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceAltColor}" />
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="MinimumHeightRequest" Value="34" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.5" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Editor">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource SubtleTextColor}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceAltColor}" />
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.5" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Picker">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="TitleColor" Value="{DynamicResource SubtleTextColor}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceAltColor}" />
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="MinimumHeightRequest" Value="34" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.5" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- ThumbColor is left native: a single thumb color would vanish against one of the switch's two states.
+         MinimumWidthRequest 0 drops the width WinUI reserves for "On"/"Off" text, so switches sit flush right. -->
+    <Style TargetType="Switch">
+        <Setter Property="OnColor" Value="{DynamicResource AccentColor}" />
+        <Setter Property="MinimumWidthRequest" Value="0" />
+    </Style>
+
+    <Style TargetType="Slider">
+        <Setter Property="MinimumTrackColor" Value="{DynamicResource AccentColor}" />
+        <Setter Property="MaximumTrackColor" Value="{DynamicResource BorderColor}" />
+        <Setter Property="ThumbColor" Value="{DynamicResource AccentColor}" />
+    </Style>
+
+    <Style TargetType="CheckBox">
+        <Setter Property="Color" Value="{DynamicResource AccentColor}" />
+    </Style>
+
+    <Style TargetType="ActivityIndicator">
+        <Setter Property="Color" Value="{DynamicResource AccentColor}" />
+    </Style>
+
+    <!-- ===== Containers ===== -->
+
+    <Style TargetType="Border">
+        <Setter Property="Stroke" Value="{DynamicResource BorderColor}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+    </Style>
+
+    <Style x:Key="CardBorder" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceColor}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderColor}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+        <Setter Property="Padding" Value="10" />
+    </Style>
+
+    <!-- ===== Buttons ===== -->
+
+    <Style x:Key="BaseButton" TargetType="Button">
+        <Setter Property="FontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderWidth" Value="0" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="MinimumHeightRequest" Value="34" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.85" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.7" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.45" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- The default button is the secondary look. -->
+    <Style TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceAltColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+    </Style>
+
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceAltColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+    </Style>
+
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BackgroundColor" Value="{DynamicResource AccentColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource OnAccentColor}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+    </Style>
+
+    <Style x:Key="ChipButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceAltColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}" />
+        <Setter Property="Padding" Value="10,4" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="MinimumHeightRequest" Value="28" />
+    </Style>
+
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DangerColor}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontAttributes" Value="Bold" />
+    </Style>
+
+</ResourceDictionary>

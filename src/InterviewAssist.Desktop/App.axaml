@@ -1,0 +1,65 @@
+<!--
+    Theme resources: AvaloniaThemeService overwrites these at startup and whenever Settings.Theme / FontSize change.
+    The values here are the Dark palette (ThemePalettes.Dark) so the designer and the first frame resolve.
+-->
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="InterviewAssist.Desktop.App"
+             Name="Interview Assist"
+             RequestedThemeVariant="Dark">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="AppBackgroundColor">#16171B</Color>
+            <Color x:Key="SurfaceColor">#1F2026</Color>
+            <Color x:Key="SurfaceAltColor">#2A2C34</Color>
+            <Color x:Key="BorderColor">#363842</Color>
+            <Color x:Key="TextColor">#ECEDF1</Color>
+            <Color x:Key="SubtleTextColor">#9A9DAB</Color>
+            <Color x:Key="AccentColor">#818CF8</Color>
+            <Color x:Key="OnAccentColor">#10111A</Color>
+            <Color x:Key="InterimTextColor">#A5B4FC</Color>
+            <Color x:Key="QuestionTextColor">#C4B5FD</Color>
+            <Color x:Key="SuccessColor">#34D399</Color>
+            <Color x:Key="WarningColor">#FBBF24</Color>
+            <Color x:Key="DangerColor">#E5484D</Color>
+            <Color x:Key="CodeBackgroundColor">#111216</Color>
+            <Color x:Key="CodeTextColor">#DCDFF5</Color>
+
+            <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource AppBackgroundColor}" />
+            <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+            <SolidColorBrush x:Key="SurfaceAltBrush" Color="{StaticResource SurfaceAltColor}" />
+            <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+            <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
+            <SolidColorBrush x:Key="SubtleTextBrush" Color="{StaticResource SubtleTextColor}" />
+            <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+            <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
+            <SolidColorBrush x:Key="InterimTextBrush" Color="{StaticResource InterimTextColor}" />
+            <SolidColorBrush x:Key="QuestionTextBrush" Color="{StaticResource QuestionTextColor}" />
+            <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
+            <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
+            <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+            <SolidColorBrush x:Key="CodeBackgroundBrush" Color="{StaticResource CodeBackgroundColor}" />
+            <SolidColorBrush x:Key="CodeTextBrush" Color="{StaticResource CodeTextColor}" />
+
+            <x:Double x:Key="BaseFontSize">14</x:Double>
+            <x:Double x:Key="SmallFontSize">12</x:Double>
+            <x:Double x:Key="LargeFontSize">17</x:Double>
+            <x:Double x:Key="AnswerFontSize">15</x:Double>
+
+            <!-- Rounder than Fluent's 4 px, like the MAUI app's inputs and buttons. -->
+            <CornerRadius x:Key="ControlCornerRadius">6</CornerRadius>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Dark" Accent="#818CF8" RegionColor="#16171B" ErrorText="#E5484D" />
+                <ColorPaletteResources x:Key="Light" Accent="#4F46E5" RegionColor="#F3F4F7" ErrorText="#DC2626" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </Application.Styles>
+
+</Application>

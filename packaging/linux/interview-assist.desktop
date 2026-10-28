@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Interview Assist
+GenericName=Interview Assistant
+Comment=Live captions of the interviewer and AI answers based on your resume
+Exec=interview-assist
+Icon=interview-assist
+Terminal=false
+Categories=Office;Utility;
+Keywords=interview;captions;transcription;assistant;
+StartupNotify=true
+StartupWMClass=interview-assist

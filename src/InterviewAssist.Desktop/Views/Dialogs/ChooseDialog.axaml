@@ -1,0 +1,26 @@
+<!-- Pick one option from a list (the MAUI action sheet), shown over the window by AvaloniaDialogService. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="InterviewAssist.Desktop.Views.Dialogs.ChooseDialog">
+
+    <Border Classes="Card Dialog">
+        <Grid RowDefinitions="Auto,*,Auto"
+              RowSpacing="10">
+            <TextBlock x:Name="TitleText"
+                       Classes="DialogTitle" />
+
+            <ScrollViewer Grid.Row="1"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="OptionsPanel"
+                            Spacing="4" />
+            </ScrollViewer>
+
+            <Button x:Name="CancelButton"
+                    Grid.Row="2"
+                    HorizontalAlignment="Right"
+                    Click="OnCancelClick" />
+        </Grid>
+    </Border>
+
+</UserControl>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Three tabs, no nav bar (saves vertical space). Pages are created from their DataTemplates through the
+    DI container (see MauiProgram). Shell and tab bar colors come from the implicit Shell style in
+    Resources/Styles/Styles.xaml, bound to the theme keys with DynamicResource.
+-->
+<Shell x:Class="InterviewAssist.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:InterviewAssist.Views"
+       Title="Interview Assist"
+       Shell.NavBarIsVisible="False"
+       Shell.FlyoutBehavior="Disabled">
+
+    <TabBar>
+        <ShellContent Title="Live"
+                      Route="live"
+                      ContentTemplate="{DataTemplate views:MainPage}" />
+        <ShellContent Title="Setup"
+                      Route="setup"
+                      ContentTemplate="{DataTemplate views:SetupPage}" />
+        <ShellContent Title="Settings"
+                      Route="settings"
+                      ContentTemplate="{DataTemplate views:SettingsPage}" />
+    </TabBar>
+
+</Shell>
